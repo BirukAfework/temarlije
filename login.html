@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temar Lije - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e1e1e; /* Solid dark background */
+            color: #e0e0e0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            width: 700px;
+            height: 400px;
+            background: #2c2c2c; /* Solid dark container */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sidebar with Logo */
+        .sidebar {
+            width: 250px;
+            background: #ff6f61; /* Solid coral color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        /* Login Form and Forgot Password Form */
+        .form-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form, .forgot-password-form {
+            display: none;
+        }
+
+        .login-form.active, .forgot-password-form.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-form h2, .forgot-password-form h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff6f61;
+            text-align: center;
+        }
+
+        .login-form .input-group, .forgot-password-form .input-group {
+            margin-bottom: 15px;
+        }
+
+        .login-form input, .forgot-password-form input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .login-form input:focus, .forgot-password-form input:focus {
+            border-color: #ff6f61;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 20px;
+            color: #ff6f61;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .forgot-password:hover {
+            color: #ff8a75;
+        }
+
+        .login-form button, .forgot-password-form button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #ff6f61;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-form button:hover, .forgot-password-form button:hover {
+            background: #ff8a75;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 10px;
+            color: #ff6f61;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .back-to-login:hover {
+            color: #ff8a75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar with Logo -->
+        <div class="sidebar">
+            <div class="logo">Temar Lije</div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <!-- Login Form -->
+            <div class="login-form active">
+                <h2>Welcome Back</h2>
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot Password?</a>
+                <button type="submit" onclick="login()">Login</button>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div class="forgot-password-form">
+                <h2>Recover Password</h2>
+                <div class="input-group">
+                    <input type="text" id="recoveryAnswer" placeholder="Answer Recovery Question" required>
+                </div>
+                <p id="recoveryQuestion">What was your first pet's name?</p>
+                <button type="submit" onclick="recoverPassword()">Submit Answer</button>
+                <a href="#" class="back-to-login" onclick="showLoginForm()">Back to Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form Toggle Functions
+        function showForgotPassword() {
+            document.querySelector('.login-form').classList.remove('active');
+            document.querySelector('.forgot-password-form').classList.add('active');
+        }
+
+        function showLoginForm() {
+            document.querySelector('.forgot-password-form').classList.remove('active');
+            document.querySelector('.login-form').classList.add('active');
+        }
+
+        // Login Function (Basic Example)
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const correctUsername = "admin";
+            const correctPassword = "password123";
+            const correctAnswer = "fluffy"; // Predefined recovery answer
+
+            if (username === correctUsername && password === correctPassword) {
+                alert(`Login successful! Welcome, ${username}`);
+                // Add actual login logic here (e.g., redirect to dashboard)
+            } else {
+                alert('Invalid username or password.');
+            }
+        }
+
+        // Recover Password Function (Basic Example)
+        function recoverPassword() {
+            const recoveryAnswer = document.getElementById('recoveryAnswer').value.toLowerCase();
+            const correctAnswer = "fluffy"; // Predefined recovery answer
+
+            if (recoveryAnswer === correctAnswer) {
+                const newPassword = Math.random().toString(36).slice(-8); // Generate random 8-character password
+                alert(`Password recovered! Your new password is: ${newPassword}. Please log in with this.`);
+                showLoginForm(); // Return to login after recovery
+            } else {
+                alert('Incorrect answer. Please try again or contact support.');
+            }
+        }
+    </script>
+</body>
+</html>
