@@ -192,6 +192,98 @@
             transform: translateX(20px);
         }
 
+        /* Student Details Table */
+        .student-details-container {
+            background: #2c2c2c;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .light-theme .student-details-container {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-details-container h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #ff6f61;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .student-details-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .student-details-table th, .student-details-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+            font-size: 14px;
+        }
+
+        .light-theme .student-details-table th, .light-theme .student-details-table td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .student-details-table th {
+            background: linear-gradient(135deg, #ff6f61, #ff8a75);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .student-details-table tr {
+            background: #3a3a3a;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .light-theme .student-details-table tr {
+            background: #fff;
+        }
+
+        .student-details-table tr:hover {
+            background: #4a4a4a;
+            transform: scale(1.01);
+        }
+
+        .light-theme .student-details-table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .student-details-table td button {
+            padding: 6px 12px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .student-details-table td button:hover {
+            background: #ff8a75;
+        }
+
+        .student-details-table td button.save-btn {
+            background: #4caf50;
+        }
+
+        .student-details-table td button.save-btn:hover {
+            background: #66bb6a;
+        }
+
         /* ID Cards Container */
         .id-cards-container {
             display: flex;
@@ -322,8 +414,8 @@
             background: #fff3cd;
         }
 
-        /* Generate Button */
-        .generate-button {
+        /* Generate and Export Buttons */
+        .generate-button, .export-button {
             padding: 10px 20px;
             background: #ff6f61;
             color: white;
@@ -335,7 +427,7 @@
             margin: 20px auto;
         }
 
-        .generate-button:hover {
+        .generate-button:hover, .export-button:hover {
             background: #ff8a75;
         }
 
@@ -379,6 +471,35 @@
                         <img src="https://via.placeholder.com/40" alt="User">
                     </div>
                 </div>
+            </div>
+
+            <!-- Student Details Table -->
+            <div class="student-details-container">
+                <h3>Student Details</h3>
+                <table class="student-details-table" id="studentDetailsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Surname</th>
+                            <th>Sex</th>
+                            <th>Age</th>
+                            <th>City</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Is New</th>
+                            <th>Grade</th>
+                            <th>Parent Name</th>
+                            <th>Parent Occupation</th>
+                            <th>Parent City</th>
+                            <th>Parent Address</th>
+                            <th>Parent Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentDetailsBody"></tbody>
+                </table>
             </div>
 
             <!-- ID Cards Section -->
@@ -432,8 +553,9 @@
                 </table>
             </div>
 
-            <!-- Generate Report Card Button -->
+            <!-- Generate Report Card and Export ID Buttons -->
             <button class="generate-button" onclick="generateReportCard()">Generate Report Card</button>
+            <button class="export-button" onclick="exportID()">Export ID Card</button>
         </div>
     </div>
 
@@ -446,13 +568,25 @@
             document.body.classList.toggle('light-theme');
         });
 
-        // Sample Student Data with Grades for 12 Subjects
+        // Sample Student Data with Fields from Enrollment Form
         const students = [
             {
-                id: "S001", 
-                name: "John Doe", 
-                grade: "9", 
-                section: "A",
+                id: "S001",
+                firstName: "John",
+                lastName: "Doe",
+                surname: "Smith",
+                sex: "male",
+                age: 15,
+                city: "Springfield",
+                address: "123 Main St",
+                phone: "555-1234",
+                isNew: "yes",
+                grade: "9",
+                parentName: "Jane Doe",
+                parentOccupation: "Teacher",
+                parentCity: "Springfield",
+                parentAddress: "123 Main St",
+                parentPhone: "555-5678",
                 grades: {
                     "Mathematics": { first: 85, second: 88, total: 173 },
                     "Science": { first: 90, second: 87, total: 177 },
@@ -477,7 +611,7 @@
 
         // Render ID Card
         function renderIdCard() {
-            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentName').textContent = `${student.firstName} ${student.lastName}`;
             document.getElementById('studentGrade').textContent = student.grade;
             document.getElementById('studentId').textContent = student.id;
         }
@@ -497,6 +631,90 @@
                     `;
                     gradesBody.appendChild(row);
                 }
+            }
+        }
+
+        // Render Student Details Table
+        function renderStudentDetailsTable() {
+            const detailsBody = document.getElementById('studentDetailsBody');
+            detailsBody.innerHTML = '';
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td contenteditable="false">${student.firstName}</td>
+                    <td contenteditable="false">${student.lastName}</td>
+                    <td contenteditable="false">${student.surname}</td>
+                    <td contenteditable="false">${student.sex}</td>
+                    <td contenteditable="false">${student.age}</td>
+                    <td contenteditable="false">${student.city}</td>
+                    <td contenteditable="false">${student.address}</td>
+                    <td contenteditable="false">${student.phone}</td>
+                    <td contenteditable="false">${student.isNew}</td>
+                    <td contenteditable="false">${student.grade}</td>
+                    <td contenteditable="false">${student.parentName}</td>
+                    <td contenteditable="false">${student.parentOccupation}</td>
+                    <td contenteditable="false">${student.parentCity}</td>
+                    <td contenteditable="false">${student.parentAddress}</td>
+                    <td contenteditable="false">${student.parentPhone}</td>
+                    <td>
+                        <button onclick="editStudent(${index})">Edit</button>
+                    </td>
+                `;
+                detailsBody.appendChild(row);
+            });
+        }
+
+        // Edit Student
+        function editStudent(index) {
+            const row = document.querySelectorAll('#studentDetailsBody tr')[index];
+            const cells = row.querySelectorAll('td');
+            const isEditing = cells[1].getAttribute('contenteditable') === 'true';
+
+            if (!isEditing) {
+                // Enter edit mode
+                for (let i = 1; i < cells.length - 1; i++) {
+                    cells[i].setAttribute('contenteditable', 'true');
+                }
+                cells[cells.length - 1].innerHTML = `<button class="save-btn" onclick="saveStudent(${index})">Save</button>`;
+            }
+        }
+
+        // Save Student
+        function saveStudent(index) {
+            const row = document.querySelectorAll('#studentDetailsBody tr')[index];
+            const cells = row.querySelectorAll('td');
+            
+            // Update student data
+            students[index] = {
+                ...students[index],
+                firstName: cells[1].textContent,
+                lastName: cells[2].textContent,
+                surname: cells[3].textContent,
+                sex: cells[4].textContent,
+                age: parseInt(cells[5].textContent),
+                city: cells[6].textContent,
+                address: cells[7].textContent,
+                phone: cells[8].textContent,
+                isNew: cells[9].textContent,
+                grade: cells[10].textContent,
+                parentName: cells[11].textContent,
+                parentOccupation: cells[12].textContent,
+                parentCity: cells[13].textContent,
+                parentAddress: cells[14].textContent,
+                parentPhone: cells[15].textContent
+            };
+
+            // Exit edit mode
+            for (let i = 1; i < cells.length - 1; i++) {
+                cells[i].setAttribute('contenteditable', 'false');
+            }
+            cells[cells.length - 1].innerHTML = `<button onclick="editStudent(${index})">Edit</button>`;
+
+            // Update ID card if this is the current student
+            if (students[index].id === student.id) {
+                student = students[index];
+                renderIdCard();
             }
         }
 
@@ -546,9 +764,37 @@
             doc.save(`${document.getElementById('studentName').textContent}_ReportCard.pdf`);
         }
 
+        // Export ID Card as PDF
+        function exportID() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Front of ID Card
+            doc.setFontSize(16);
+            doc.text(document.querySelector('.school-name').textContent, 10, 10);
+            doc.setFontSize(12);
+            doc.text(`Student Name: ${document.getElementById('studentName').textContent}`, 10, 20);
+            doc.text(`Grade: ${document.getElementById('studentGrade').textContent}`, 10, 30);
+            doc.text(`ID: ${document.getElementById('studentId').textContent}`, 10, 40);
+
+            // Back of ID Card (Rules)
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text(document.querySelector('.id-card-back h3').textContent, 10, 10);
+            doc.setFontSize(10);
+            let y = 20;
+            document.querySelectorAll('.id-card-back li').forEach(rule => {
+                doc.text(`- ${rule.textContent}`, 10, y);
+                y += 10;
+            });
+
+            doc.save(`${document.getElementById('studentName').textContent}_IDCard.pdf`);
+        }
+
         // Initial Render
         renderIdCard();
         renderGradesTable();
+        renderStudentDetailsTable();
 
         // Sidebar Interactivity
         const sidebarItems = document.querySelectorAll('.sidebar li');
