@@ -1,1 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temar Lije - Student ID Card</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
 
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .light-theme {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        /* Sidebar (Reused from Students Page) */
+        .sidebar {
+            width: 220px;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .sidebar {
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar .logo {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 12px 15px;
+            cursor: pointer;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .sidebar li:hover {
+            background-color: #ff6f61;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li:hover {
+            background-color: #ffccc7;
+        }
+
+        .sidebar li.active {
+            background-color: #ff6f61;
+            font-weight: bold;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li.active {
+            background-color: #ffccc7;
+        }
+
+        .sidebar .logout {
+            margin-top: 20px;
+            border-top: 1px solid #555;
+            padding-top: 12px;
+        }
+
+        .light-theme .sidebar .logout {
+            border-top: 1px solid #ddd;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 220px;
+            padding: 20px;
+            background: #1e1e1e;
+        }
+
+        .light-theme .main-content {
+            background: #f4f7fa;
+        }
+
+        /* Header (Reused from Students Page) */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .header {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-right .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+            transition: transform 0.3s ease;
+        }
+
+        .header-right .user-profile img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Theme Toggle (Reused from Students Page) */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle label {
+            font-size: 14px;
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .theme-toggle .slider {
+            width: 40px;
+            height: 20px;
+            background: #555;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .light-theme .theme-toggle .slider {
+            background: #ccc;
+        }
+
+        .theme-toggle .slider::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle input:checked + .slider {
+            background: #ff6f61;
+        }
+
+        .theme-toggle input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* ID Card Container */
+        .id-card-container {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            perspective: 1000px;
+        }
+
+        .light-theme .id-card-container {
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .id-card-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .id-card {
+            width: 350px;
+            height: 220px;
+            margin: 0 auto;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .id-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .id-card-front, .id-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #3a3a3a;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .id-card-front, .light-theme .id-card-back {
+            background: #fff3cd;
+        }
+
+        .id-card-back {
+            transform: rotateY(180deg);
+        }
+
+        .id-card-front .school-logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .id-card-front .school-name {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            color: #ff6f61;
+        }
+
+        .id-card-front .student-image img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+            float: left;
+            margin-right: 15px;
+        }
+
+        .id-card-front .student-details p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .id-card-back h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #ff6f61;
+        }
+
+        .id-card-back ul {
+            list-style: disc;
+            padding-left: 20px;
+            font-size: 12px;
+        }
+
+        /* Grades Table */
+        .grades-container {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .light-theme .grades-container {
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .grades-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .grades-container h3 {
+            margin-bottom: 15px;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .grades-table th, .grades-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #555;
+        }
+
+        .light-theme .grades-table th, .light-theme .grades-table td {
+            border: 1px solid #ddd;
+        }
+
+        .grades-table th {
+            background: #ff6f61;
+            color: white;
+        }
+
+        .grades-table tr:nth-child(even) {
+            background: #3a3a3a;
+        }
+
+        .light-theme .grades-table tr:nth-child(even) {
+            background: #fff3cd;
+        }
+
+        /* Generate Button */
+        .generate-button {
+            padding: 10px 20px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .generate-button:hover {
+            background: #ff8a75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">Temar Lije</div>
+            <ul>
+                <li>Dashboard</li>
+                <li class="active">Students</li>
+                <li>Calendar</li>
+                <li>Assignments</li>
+                <li>Grades</li>
+                <li>Library</li>
+                <li>Timetable</li>
+                <li>Settings</li>
+                <li class="logout">Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Student ID Card</h1>
+                <div class="header-right">
+                    <div class="theme-toggle">
+                        <label>Dark/Light</label>
+                        <input type="checkbox" id="themeToggle">
+                        <label for="themeToggle" class="slider"></label>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ID Card Section -->
+            <div class="id-card-container">
+                <div class="id-card" id="idCard">
+                    <!-- Front of ID Card -->
+                    <div class="id-card-front">
+                        <div class="school-logo">
+                            <img src="https://via.placeholder.com/50" alt="School Logo">
+                        </div>
+                        <div class="school-name">Temar Lije High School</div>
+                        <div class="student-image">
+                            <img src="https://via.placeholder.com/80" alt="Student Photo">
+                        </div>
+                        <div class="student-details" id="studentDetails">
+                            <p>Student Name: <span id="studentName">Loading...</span></p>
+                            <p>Grade: <span id="studentGrade">Loading...</span></p>
+                            <p>Section: <span id="studentSection">Loading...</span></p>
+                            <p>ID: <span id="studentId">Loading...</span></p>
+                        </div>
+                    </div>
+                    <!-- Back of ID Card -->
+                    <div class="id-card-back">
+                        <h3>Rules and Regulations</h3>
+                        <ul>
+                            <li>Always carry your ID card.</li>
+                            <li>Attend classes punctually.</li>
+                            <li>Respect school property.</li>
+                            <li>Follow the dress code.</li>
+                            <li>No unauthorized absences.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grades Table -->
+            <div class="grades-container">
+                <h3>Grades Report</h3>
+                <table class="grades-table" id="gradesTable">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>First Semester</th>
+                            <th>Second Semester</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradesBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Generate Report Card Button -->
+            <button class="generate-button" onclick="generateReportCard()">Generate Report Card</button>
+        </div>
+    </div>
+
+    <!-- Libraries for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Sample Student Data with Grades for 12 Subjects
+        const students = [
+            {
+                id: "S001", name: "John Doe", grade: "9", section: "A",
+                grades: {
+                    "Mathematics": { first: 85, second: 88, total: 173 },
+                    "Science": { first: 90, second: 87, total: 177 },
+                    "English": { first: 88, second: 92, total: 180 },
+                    "History": { first: 82, second: 85, total: 167 },
+                    "Geography": { first: 79, second: 83, total: 162 },
+                    "Physics": { first: 87, second: 89, total: 176 },
+                    "Chemistry": { first: 84, second: 86, total: 170 },
+                    "Biology": { first: 91, second: 90, total: 181 },
+                    "Art": { first: 78, second: 80, total: 158 },
+                    "Physical Education": { first: 95, second: 93, total: 188 },
+                    "Computer Science": { first: 89, second: 91, total: 180 },
+                    "Literature": { first: 86, second: 88, total: 174 }
+                }
+            },
+            // Add more students as needed
+            { id: "S002", name: "Jane Smith", grade: "9", section: "B", grades: { /* Similar structure */ } }
+        ];
+
+        // Get Student ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const studentId = urlParams.get('id');
+        const student = students.find(s => s.id === studentId);
+
+        // Render ID Card
+        function renderIdCard() {
+            if (student) {
+                document.getElementById('studentName').textContent = student.name;
+                document.getElementById('studentGrade').textContent = student.grade;
+                document.getElementById('studentSection').textContent = student.section;
+                document.getElementById('studentId').textContent = student.id;
+            } else {
+                document.getElementById('studentDetails').innerHTML = '<p>Student Not Found</p>';
+            }
+        }
+
+        // Render Grades Table
+        function renderGradesTable() {
+            const gradesBody = document.getElementById('gradesBody');
+            gradesBody.innerHTML = '';
+            if (student && student.grades) {
+                for (const [subject, scores] of Object.entries(student.grades)) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${subject}</td>
+                        <td>${scores.first}</td>
+                        <td>${scores.second}</td>
+                        <td>${scores.total}</td>
+                    `;
+                    gradesBody.appendChild(row);
+                }
+            }
+        }
+
+        // Flip ID Card on Click
+        const idCard = document.getElementById('idCard');
+        idCard.addEventListener('click', () => {
+            idCard.classList.toggle('flipped');
+        });
+
+        // Generate Report Card as PDF
+        function generateReportCard() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Front of ID Card
+            doc.setFontSize(16);
+            doc.text("Temar Lije High School", 10, 10);
+            doc.setFontSize(12);
+            doc.text(`Student Name: ${student.name}`, 10, 20);
+            doc.text(`Grade: ${student.grade}`, 10, 30);
+            doc.text(`Section: ${student.section}`, 10, 40);
+            doc.text(`ID: ${student.id}`, 10, 50);
+
+            // Grades Table
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text("Grades Report", 10, 10);
+            doc.setFontSize(10);
+            let y = 20;
+            doc.text("Subject                First Sem    Second Sem    Total", 10, y);
+            y += 10;
+            for (const [subject, scores] of Object.entries(student.grades)) {
+                doc.text(`${subject.padEnd(20)} ${scores.first.toString().padEnd(12)} ${scores.second.toString().padEnd(12)} ${scores.total}`, 10, y);
+                y += 10;
+                if (y > 280) {
+                    doc.addPage();
+                    y = 10;
+                }
+            }
+
+            // Back of ID Card (Rules)
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text("Rules and Regulations", 10, 10);
+            doc.setFontSize(10);
+            y = 20;
+            const rules = [
+                "Always carry your ID card.",
+                "Attend classes punctually.",
+                "Respect school property.",
+                "Follow the dress code.",
+                "No unauthorized absences."
+            ];
+            rules.forEach(rule => {
+                doc.text(`- ${rule}`, 10, y);
+                y += 10;
+            });
+
+            doc.save(`${student.name}_ReportCard.pdf`);
+        }
+
+        // Initial Render
+        renderIdCard();
+        renderGradesTable();
+
+        // Sidebar Interactivity
+        const sidebarItems = document.querySelectorAll('.sidebar li');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.textContent === 'Logout') {
+                    if (confirm('Are you sure you want to logout?')) {
+                        alert('Logging out...');
+                    }
+                } else if (item.textContent === 'Students') {
+                    window.location.href = 'students.html';
+                } else {
+                    alert(`Navigating to ${item.textContent}...`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
