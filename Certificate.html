@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temar Lije - Digital Certificate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .light-theme {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .sidebar {
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar .logo {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 12px 15px;
+            cursor: pointer;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .sidebar li:hover {
+            background-color: #ff6f61;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li:hover {
+            background-color: #ffccc7;
+        }
+
+        .sidebar li.active {
+            background-color: #ff6f61;
+            font-weight: bold;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li.active {
+            background-color: #ffccc7;
+        }
+
+        .sidebar .logout {
+            margin-top: 20px;
+            border-top: 1px solid #555;
+            padding-top: 12px;
+        }
+
+        .light-theme .sidebar .logout {
+            border-top: 1px solid #ddd;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 220px;
+            padding: 20px;
+            background: #1e1e1e;
+        }
+
+        .light-theme .main-content {
+            background: #f4f7fa;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .header {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-right .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+            transition: transform 0.3s ease;
+        }
+
+        .header-right .user-profile img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle label {
+            font-size: 14px;
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .theme-toggle .slider {
+            width: 40px;
+            height: 20px;
+            background: #555;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .light-theme .theme-toggle .slider {
+            background: #ccc;
+        }
+
+        .theme-toggle .slider::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle input:checked + .slider {
+            background: #ff6f61;
+        }
+
+        .theme-toggle input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* Certificate Container */
+        .certificate-container {
+            background: #2c2c2c;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            max-width: 500px;
+            margin: 0 auto 25px;
+            border: 1px dashed #555;
+        }
+
+        .light-theme .certificate-container {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px dashed #ddd;
+        }
+
+        .certificate-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .certificate-header h2 {
+            font-size: 24px;
+            color: #ff6f61;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .certificate-header .school-logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+        }
+
+        .certificate-body {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .certificate-body p {
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px dotted #555;
+        }
+
+        .light-theme .certificate-body p {
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .certificate-body p span {
+            font-weight: bold;
+            color: #ff8a75;
+        }
+
+        .certificate-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .certificate-footer p {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .light-theme .certificate-footer p {
+            color: #666;
+        }
+
+        /* Print Button */
+        .print-button {
+            padding: 10px 20px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .print-button:hover {
+            background: #ff8a75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">Temar Lije</div>
+            <ul>
+                <li>Dashboard</li>
+                <li>Students</li>
+                <li class="active">Certificates</li>
+                <li>Calendar</li>
+                <li>Assignments</li>
+                <li>Grades</li>
+                <li>Library</li>
+                <li>Timetable</li>
+                <li>Settings</li>
+                <li class="logout">Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Digital Certificate</h1>
+                <div class="header-right">
+                    <div class="theme-toggle">
+                        <label>Dark/Light</label>
+                        <input type="checkbox" id="themeToggle">
+                        <label for="themeToggle" class="slider"></label>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Section -->
+            <div class="certificate-container" id="certificate">
+                <div class="certificate-header">
+                    <div class="school-logo">
+                        <img src="logo.png" alt="School Logo">
+                    </div>
+                    <h2>Certificate of Completion</h2>
+                </div>
+                <div class="certificate-body">
+                    <p><span>Student Name:</span> <span id="certStudentName">John Doe</span></p>
+                    <p><span>Student ID:</span> <span id="certStudentId">S001</span></p>
+                    <p><span>Grade:</span> <span id="certGrade">9</span></p>
+                    <p><span>Completion Date:</span> <span id="certDate">March 07, 2025</span></p>
+                    <p><span>Course/Program:</span> <span id="certCourse">Academic Excellence Program</span></p>
+                    <p><span>Issuer:</span> Temar Lije High School</p>
+                    <p><span>Certificate Number:</span> <span id="certNumber">CERT-2025-001</span></p>
+                </div>
+                <div class="certificate-footer">
+                    <p>Issued on: March 07, 2025 | Valid Until: March 07, 2026</p>
+                </div>
+            </div>
+
+            <!-- Print Button -->
+            <button class="print-button" onclick="printCertificate()">Print Certificate</button>
+        </div>
+    </div>
+
+    <!-- Libraries for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Sample Certificate Data
+        const certificateData = {
+            studentName: "John Doe",
+            studentId: "S001",
+            grade: "9",
+            completionDate: "March 07, 2025",
+            course: "Academic Excellence Program",
+            issuer: "Temar Lije High School",
+            certNumber: "CERT-2025-001",
+            issueDate: "March 07, 2025",
+            validUntil: "March 07, 2026"
+        };
+
+        // Render Certificate
+        function renderCertificate() {
+            document.getElementById('certStudentName').textContent = certificateData.studentName;
+            document.getElementById('certStudentId').textContent = certificateData.studentId;
+            document.getElementById('certGrade').textContent = certificateData.grade;
+            document.getElementById('certDate').textContent = certificateData.completionDate;
+            document.getElementById('certCourse').textContent = certificateData.course;
+            document.getElementById('certNumber').textContent = certificateData.certNumber;
+        }
+
+        // Print Certificate as PDF
+        function printCertificate() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a5'
+            });
+
+            // Certificate Header
+            doc.setFontSize(20);
+            doc.setTextColor(255, 111, 97); // #ff6f61
+            doc.text("Certificate of Completion", 74, 20, { align: "center" });
+            doc.setFontSize(12);
+            doc.setTextColor(150); // Gray for issuer
+            doc.text("Temar Lije High School", 74, 28, { align: "center" });
+
+            // Certificate Body
+            doc.setTextColor(0); // Black
+            doc.setFontSize(10);
+            let y = 40;
+            const fields = [
+                `Student Name: ${certificateData.studentName}`,
+                `Student ID: ${certificateData.studentId}`,
+                `Grade: ${certificateData.grade}`,
+                `Completion Date: ${certificateData.completionDate}`,
+                `Course/Program: ${certificateData.course}`,
+                `Issuer: ${certificateData.issuer}`,
+                `Certificate Number: ${certificateData.certNumber}`
+            ];
+            fields.forEach(field => {
+                const [label, value] = field.split(': ');
+                doc.setFont("helvetica", "bold");
+                doc.text(`${label}:`, 20, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(value, 60, y);
+                doc.line(20, y + 1, 128, y + 1); // Dotted line
+                y += 10;
+            });
+
+            // Certificate Footer
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text(`Issued on: ${certificateData.issueDate} | Valid Until: ${certificateData.validUntil}`, 74, y + 10, { align: "center" });
+
+            // Save PDF
+            doc.save(`${certificateData.studentName}_Certificate.pdf`);
+        }
+
+        // Initial Render
+        renderCertificate();
+
+        // Sidebar Interactivity
+        const sidebarItems = document.querySelectorAll('.sidebar li');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.textContent === 'Logout') {
+                    if (confirm('Are you sure you want to logout?')) {
+                        alert('Logging out...');
+                    }
+                } else if (item.textContent === 'Certificates') {
+                    // Already on this page
+                } else {
+                    alert(`Navigating to ${item.textContent}...`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
