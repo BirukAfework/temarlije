@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temar Lije - Book Borrowing</title>
     <style>
-        /* Same styles as provided in your original code */
+        /* Same base styles as before with updates for book list and popup */
         * {
             margin: 0;
             padding: 0;
@@ -332,18 +332,65 @@
             grid-column: span 2;
         }
 
+        /* Eye-catching Book List */
         .book-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 200px;
+            gap: 15px;
+            max-height: 250px;
             overflow-y: auto;
+            padding: 10px;
+            background: #252525;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .light-theme .book-list {
+            background: #f0f0f0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .book-list label {
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 10px;
+            background: #3a3a3a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .light-theme .book-list label {
+            background: #ffffff;
+        }
+
+        .book-list label:hover {
+            background: #ff6f61;
+            color: #fff;
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-list input[type="checkbox"]:checked + span {
+            color: #ff6f61;
+            font-weight: bold;
+        }
+
+        .light-theme .book-list input[type="checkbox"]:checked + span {
+            color: #ff6f61;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .borrowing-form button {
@@ -361,6 +408,85 @@
 
         .borrowing-form button:hover {
             background: #ff8a75;
+        }
+
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .light-theme .popup-content {
+            background: #ffffff;
+        }
+
+        .popup-content h3 {
+            color: #ff6f61;
+            margin-bottom: 15px;
+        }
+
+        .popup-content ul {
+            list-style: none;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .popup-content ul li {
+            padding: 8px;
+            background: #3a3a3a;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .light-theme .popup-content ul li {
+            background: #f0f0f0;
+        }
+
+        .popup-content button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .popup-content .confirm-btn {
+            background: #ff6f61;
+            color: #fff;
+            margin-right: 10px;
+        }
+
+        .popup-content .confirm-btn:hover {
+            background: #ff8a75;
+        }
+
+        .popup-content .cancel-btn {
+            background: #555;
+            color: #fff;
+        }
+
+        .popup-content .cancel-btn:hover {
+            background: #777;
         }
     </style>
 </head>
@@ -442,12 +568,23 @@
                     <div class="form-group full-width">
                         <label>Available Books</label>
                         <div class="book-list" id="bookList">
-                            <!-- Books will be dynamically populated here -->
+                            <p>Select a grade to see available books.</p>
                         </div>
                     </div>
-                    <button type="submit" onclick="borrowBooks()">Confirm Borrow</button>
+                    <button type="submit" onclick="showConfirmationPopup()">Confirm Borrow</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Popup -->
+    <div class="popup" id="confirmationPopup">
+        <div class="popup-content">
+            <h3>Confirm Borrowing</h3>
+            <p>Please confirm the following books for borrowing:</p>
+            <ul id="selectedBooksList"></ul>
+            <button class="confirm-btn" onclick="borrowBooks()">Confirm</button>
+            <button class="cancel-btn" onclick="hideConfirmationPopup()">Cancel</button>
         </div>
     </div>
 
@@ -500,14 +637,44 @@
                 booksByGrade[grade].forEach((book, index) => {
                     const div = document.createElement('div');
                     div.innerHTML = `
-                        <input type="checkbox" id="book${index}" name="books" value="${book}">
-                        <label for="book${index}">${book}</label>
+                        <label>
+                            <input type="checkbox" id="book${index}" name="books" value="${book}">
+                            <span>${book}</span>
+                        </label>
                     `;
                     bookList.appendChild(div);
                 });
             } else {
                 bookList.innerHTML = '<p>Select a grade to see available books.</p>';
             }
+        }
+
+        // Show Confirmation Popup
+        function showConfirmationPopup() {
+            const studentName = document.getElementById('studentName').value;
+            const studentId = document.getElementById('studentId').value;
+            const grade = document.getElementById('grade').value;
+            const selectedBooks = Array.from(document.querySelectorAll('input[name="books"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            if (studentName && studentId && grade && selectedBooks.length > 0) {
+                const popup = document.getElementById('confirmationPopup');
+                const selectedBooksList = document.getElementById('selectedBooksList');
+                selectedBooksList.innerHTML = '';
+                selectedBooks.forEach(book => {
+                    const li = document.createElement('li');
+                    li.textContent = book;
+                    selectedBooksList.appendChild(li);
+                });
+                popup.style.display = 'flex';
+            } else {
+                alert('Please fill in all fields and select at least one book.');
+            }
+        }
+
+        // Hide Confirmation Popup
+        function hideConfirmationPopup() {
+            document.getElementById('confirmationPopup').style.display = 'none';
         }
 
         // Borrow Books Function
@@ -518,20 +685,18 @@
             const selectedBooks = Array.from(document.querySelectorAll('input[name="books"]:checked'))
                 .map(checkbox => checkbox.value);
 
-            if (studentName && studentId && grade && selectedBooks.length > 0) {
-                const borrowData = {
-                    studentName: studentName,
-                    studentId: studentId,
-                    grade: grade,
-                    books: selectedBooks,
-                    borrowDate: new Date().toLocaleDateString()
-                };
-                alert(`Books borrowed successfully!\nDetails: ${JSON.stringify(borrowData, null, 2)}`);
-                // Add actual borrowing logic here (e.g., API call to save to database)
-                clearForm();
-            } else {
-                alert('Please fill in all fields and select at least one book.');
-            }
+            const borrowData = {
+                studentName: studentName,
+                studentId: studentId,
+                grade: grade,
+                books: selectedBooks,
+                borrowDate: new Date().toLocaleDateString()
+            };
+
+            alert(`Books borrowed successfully!\nDetails: ${JSON.stringify(borrowData, null, 2)}`);
+            hideConfirmationPopup();
+            clearForm();
+            // Add actual borrowing logic here (e.g., API call to save to database)
         }
 
         // Clear Form Function
