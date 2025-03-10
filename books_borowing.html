@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temar Lije - Book Borrowing</title>
     <style>
-        /* Same base styles as before with updates for book list and popup */
+        /* Same base styles with updates for green modal boxes */
         * {
             margin: 0;
             padding: 0;
@@ -410,58 +410,64 @@
             background: #ff8a75;
         }
 
-        /* Popup Styles */
-        .popup {
+        /* Modal Box Styles (Initial Confirmation) */
+        .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup-content {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: #2c2c2c;
             padding: 20px;
             border-radius: 10px;
             width: 400px;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .light-theme .modal {
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h3 {
+            color: #28a745; /* Green for "Confirm Borrowing" */
+            margin-bottom: 15px;
             text-align: center;
         }
 
-        .light-theme .popup-content {
-            background: #ffffff;
-        }
-
-        .popup-content h3 {
-            color: #ff6f61;
+        .modal p {
             margin-bottom: 15px;
+            text-align: center;
         }
 
-        .popup-content ul {
+        .modal ul {
             list-style: none;
             margin-bottom: 20px;
             text-align: left;
         }
 
-        .popup-content ul li {
+        .modal ul li {
             padding: 8px;
             background: #3a3a3a;
             margin: 5px 0;
             border-radius: 5px;
         }
 
-        .light-theme .popup-content ul li {
+        .light-theme .modal ul li {
             background: #f0f0f0;
         }
 
-        .popup-content button {
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal button {
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -470,23 +476,106 @@
             transition: background 0.3s ease;
         }
 
-        .popup-content .confirm-btn {
-            background: #ff6f61;
+        .modal .confirm-btn {
+            background: #28a745; /* Green for Confirm button */
             color: #fff;
-            margin-right: 10px;
         }
 
-        .popup-content .confirm-btn:hover {
-            background: #ff8a75;
+        .modal .confirm-btn:hover {
+            background: #218838; /* Darker green on hover */
         }
 
-        .popup-content .cancel-btn {
+        .modal .cancel-btn {
             background: #555;
             color: #fff;
         }
 
-        .popup-content .cancel-btn:hover {
+        .modal .cancel-btn:hover {
             background: #777;
+        }
+
+        /* Success Modal Box Styles */
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .light-theme .success-modal {
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-modal h3 {
+            color: #28a745; /* Green for "Borrowing Confirmed!" */
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .success-modal p {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .success-modal ul {
+            list-style: none;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .success-modal ul li {
+            padding: 8px;
+            background: #3a3a3a;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .light-theme .success-modal ul li {
+            background: #f0f0f0;
+        }
+
+        .success-modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #28a745; /* Green for OK button */
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .success-modal button:hover {
+            background: #218838; /* Darker green on hover */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Disable background interaction when modal is open */
+        body.modal-open {
+            overflow: hidden;
         }
     </style>
 </head>
@@ -571,21 +660,30 @@
                             <p>Select a grade to see available books.</p>
                         </div>
                     </div>
-                    <button type="submit" onclick="showConfirmationPopup()">Confirm Borrow</button>
+                    <button type="submit" onclick="showConfirmationModal()">Confirm Borrow</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Confirmation Popup -->
-    <div class="popup" id="confirmationPopup">
-        <div class="popup-content">
-            <h3>Confirm Borrowing</h3>
-            <p>Please confirm the following books for borrowing:</p>
-            <ul id="selectedBooksList"></ul>
-            <button class="confirm-btn" onclick="borrowBooks()">Confirm</button>
-            <button class="cancel-btn" onclick="hideConfirmationPopup()">Cancel</button>
+    <!-- Initial Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <h3>Confirm Borrowing</h3>
+        <p>Please confirm the following books for borrowing:</p>
+        <ul id="selectedBooksList"></ul>
+        <div class="modal-buttons">
+            <button class="confirm-btn" onclick="showSuccessModal()">Confirm</button>
+            <button class="cancel-btn" onclick="hideConfirmationModal()">Cancel</button>
         </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <h3>Borrowing Confirmed!</h3>
+        <p>Books successfully borrowed:</p>
+        <ul id="successBooksList"></ul>
+        <p id="totalBooks"></p>
+        <button onclick="hideSuccessModal()">OK</button>
     </div>
 
     <script>
@@ -649,8 +747,8 @@
             }
         }
 
-        // Show Confirmation Popup
-        function showConfirmationPopup() {
+        // Show Initial Confirmation Modal
+        function showConfirmationModal() {
             const studentName = document.getElementById('studentName').value;
             const studentId = document.getElementById('studentId').value;
             const grade = document.getElementById('grade').value;
@@ -658,7 +756,7 @@
                 .map(checkbox => checkbox.value);
 
             if (studentName && studentId && grade && selectedBooks.length > 0) {
-                const popup = document.getElementById('confirmationPopup');
+                const modal = document.getElementById('confirmationModal');
                 const selectedBooksList = document.getElementById('selectedBooksList');
                 selectedBooksList.innerHTML = '';
                 selectedBooks.forEach(book => {
@@ -666,19 +764,21 @@
                     li.textContent = book;
                     selectedBooksList.appendChild(li);
                 });
-                popup.style.display = 'flex';
+                modal.style.display = 'block';
+                document.body.classList.add('modal-open');
             } else {
                 alert('Please fill in all fields and select at least one book.');
             }
         }
 
-        // Hide Confirmation Popup
-        function hideConfirmationPopup() {
-            document.getElementById('confirmationPopup').style.display = 'none';
+        // Hide Initial Confirmation Modal
+        function hideConfirmationModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
         }
 
-        // Borrow Books Function
-        function borrowBooks() {
+        // Show Success Modal
+        function showSuccessModal() {
             const studentName = document.getElementById('studentName').value;
             const studentId = document.getElementById('studentId').value;
             const grade = document.getElementById('grade').value;
@@ -693,10 +793,30 @@
                 borrowDate: new Date().toLocaleDateString()
             };
 
-            alert(`Books borrowed successfully!\nDetails: ${JSON.stringify(borrowData, null, 2)}`);
-            hideConfirmationPopup();
+            const successModal = document.getElementById('successModal');
+            const successBooksList = document.getElementById('successBooksList');
+            const totalBooks = document.getElementById('totalBooks');
+            successBooksList.innerHTML = '';
+            selectedBooks.forEach(book => {
+                const li = document.createElement('li');
+                li.textContent = book;
+                successBooksList.appendChild(li);
+            });
+            totalBooks.textContent = `Total Books Borrowed: ${selectedBooks.length}`;
+
+            hideConfirmationModal();
+            successModal.style.display = 'block';
+            document.body.classList.add('modal-open');
+
+            // Log the borrowing data (could be sent to a server)
+            console.log('Borrowing Data:', borrowData);
+        }
+
+        // Hide Success Modal and Clear Form
+        function hideSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
             clearForm();
-            // Add actual borrowing logic here (e.g., API call to save to database)
         }
 
         // Clear Form Function
