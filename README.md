@@ -1,3 +1,5 @@
 # Features
-Enrollment
-Library/Book Borrowing
+## Auth/Login
+## Dashboard
+## Enrollment
+## Library/Book Borrowing
