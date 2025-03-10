@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temar Lije - Report Card Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .light-theme {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .sidebar {
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar .logo {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 12px 15px;
+            cursor: pointer;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .sidebar li:hover {
+            background-color: #ff6f61;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li:hover {
+            background-color: #ffccc7;
+        }
+
+        .sidebar li.active {
+            background-color: #ff6f61;
+            font-weight: bold;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li.active {
+            background-color: #ffccc7;
+        }
+
+        .sidebar .logout {
+            margin-top: 20px;
+            border-top: 1px solid #555;
+            padding-top: 12px;
+        }
+
+        .light-theme .sidebar .logout {
+            border-top: 1px solid #ddd;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 220px;
+            padding: 20px;
+            background: #1e1e1e;
+        }
+
+        .light-theme .main-content {
+            background: #f4f7fa;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .header {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-right input {
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .light-theme .header-right input {
+            border: 1px solid #ddd;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .header-right input:focus {
+            border-color: #ff6f61;
+            outline: none;
+        }
+
+        .header-right .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+            transition: transform 0.3s ease;
+        }
+
+        .header-right .user-profile img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle label {
+            font-size: 14px;
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .theme-toggle .slider {
+            width: 40px;
+            height: 20px;
+            background: #555;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .light-theme .theme-toggle .slider {
+            background: #ccc;
+        }
+
+        .theme-toggle .slider::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle input:checked + .slider {
+            background: #ff6f61;
+        }
+
+        .theme-toggle input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* Report Container */
+        .report-container {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .light-theme .report-container {
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .report-container h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            color: #ff6f61;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        .light-theme .form-group label {
+            color: #666;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .light-theme .form-group input,
+        .light-theme .form-group select {
+            border: 1px solid #ddd;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #ff6f61;
+        }
+
+        /* Grades Table */
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #252525;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .light-theme .grades-table {
+            background: #f0f0f0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .light-theme .grades-table th,
+        .light-theme .grades-table td {
+            border: 1px solid #ddd;
+        }
+
+        .grades-table th {
+            background: #3a3a3a;
+            color: #ff6f61;
+            font-weight: bold;
+        }
+
+        .light-theme .grades-table th {
+            background: #ffffff;
+            color: #ff6f61;
+        }
+
+        .grades-table td {
+            background: #3a3a3a;
+        }
+
+        .light-theme .grades-table td {
+            background: #ffffff;
+        }
+
+        .grades-table input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #252525;
+            color: #e0e0e0;
+        }
+
+        .light-theme .grades-table input {
+            border: 1px solid #ddd;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #ff6f61;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #ff8a75;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .light-theme .modal {
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h3 {
+            color: #ff6f61;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal p {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .modal .save-btn {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .modal .save-btn:hover {
+            background: #0056b3;
+        }
+
+        .modal .pdf-btn {
+            background: #17a2b8;
+            color: #fff;
+        }
+
+        .modal .pdf-btn:hover {
+            background: #117a8b;
+        }
+
+        .modal .save-img-btn {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .modal .save-img-btn:hover {
+            background: #218838;
+        }
+
+        .modal .cancel-btn {
+            background: #555;
+            color: #fff;
+        }
+
+        .modal .cancel-btn:hover {
+            background: #777;
+        }
+
+        /* Print Preview Modal */
+        .print-preview-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            max-height: 90vh;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 40px rgba(255, 111, 97, 0.3);
+            z-index: 2000;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease;
+        }
+
+        .light-theme .print-preview-modal {
+            background: linear-gradient(135deg, #ffffff 0%, #f4f7fa 100%);
+            box-shadow: 0 0 40px rgba(255, 111, 97, 0.2);
+        }
+
+        .report-card {
+            background: #fffde7;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .report-card h2 {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .report-card .subtext {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .report-card .student-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .report-card .student-details div {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .report-card .student-details div label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .report-card .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: none;
+            box-shadow: none;
+        }
+
+        .report-card .grades-table th {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .report-card .grades-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+            background: #fff;
+        }
+
+        .report-card .attendance {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .report-card .attendance div {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .report-card .attendance div label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .report-card .footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .report-card .footer .logo-placeholder {
+            border: 1px dashed #666;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .print-preview-modal .modal-buttons {
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 111, 97, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">Temar Lije</div>
+            <ul>
+                <li>Dashboard</li>
+                <li>Calendar</li>
+                <li>Students</li>
+                <li>Teachers</li>
+                <li>Enrollment</li>
+                <li>Marks</li>
+                <li>Roster</li>
+                <li class="active">Report</li>
+                <li>Settings</li>
+                <li class="logout">Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Student Report Card Generator</h1>
+                <div class="header-right">
+                    <div class="theme-toggle">
+                        <label>Dark/Light</label>
+                        <input type="checkbox" id="themeToggle">
+                        <label for="themeToggle" class="slider"></label>
+                    </div>
+                    <input type="text" placeholder="Search...">
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Container -->
+            <div class="report-container">
+                <h3>Enter Student Details</h3>
+                <div class="student-info">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="schoolYear">School Year</label>
+                        <input type="text" id="schoolYear" placeholder="e.g., 2024-2025">
+                    </div>
+                    <div class="form-group">
+                        <label for="classSelect">Grade</label>
+                        <select id="classSelect">
+                            <option value="I">Class 1</option>
+                            <option value="II">Class 2</option>
+                            <option value="III">Class 3</option>
+                            <option value="IV">Class 4</option>
+                            <option value="V">Class 5</option>
+                            <option value="VI">Class 6</option>
+                            <option value="VII">Class 7</option>
+                            <option value="VIII">Class 8</option>
+                            <option value="IX">Class 9</option>
+                            <option value="X">Class 10</option>
+                            <option value="XI">Class 11</option>
+                            <option value="XII">Class 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="term">Term</label>
+                        <input type="text" id="term" placeholder="e.g., 1st Semester">
+                    </div>
+                    <div class="form-group">
+                        <label for="teacher">Teacher</label>
+                        <input type="text" id="teacher" placeholder="Teacher's name">
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="absences">Absences</label>
+                        <input type="number" id="absences" placeholder="Number of absences">
+                    </div>
+                    <div class="form-group">
+                        <label for="tardies">Tardies</label>
+                        <input type="number" id="tardies" placeholder="Number of tardies">
+                    </div>
+                    <div class="form-group">
+                        <label for="earlyDismissals">Early Dismissals</label>
+                        <input type="number" id="earlyDismissals" placeholder="Number of early dismissals">
+                    </div>
+                    <div class="form-group">
+                        <label for="penalties">Penalties</label>
+                        <input type="number" id="penalties" placeholder="Number of penalties">
+                    </div>
+                </div>
+
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Grade Q1</th>
+                            <th>Grade Q2</th>
+                            <th>Grade Q3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Literature</td>
+                            <td><input type="text" id="literatureQ1" placeholder="e.g., A"></td>
+                            <td><input type="text" id="literatureQ2" placeholder="e.g., A"></td>
+                            <td><input type="text" id="literatureQ3" placeholder="e.g., A"></td>
+                        </tr>
+                        <tr>
+                            <td>History</td>
+                            <td><input type="text" id="historyQ1" placeholder="e.g., B+"></td>
+                            <td><input type="text" id="historyQ2" placeholder="e.g., B+"></td>
+                            <td><input type="text" id="historyQ3" placeholder="e.g., B+"></td>
+                        </tr>
+                        <tr>
+                            <td>Geography</td>
+                            <td><input type="text" id="geographyQ1" placeholder="e.g., C"></td>
+                            <td><input type="text" id="geographyQ2" placeholder="e.g., C"></td>
+                            <td><input type="text" id="geographyQ3" placeholder="e.g., C"></td>
+                        </tr>
+                        <tr>
+                            <td>Algebra</td>
+                            <td><input type="text" id="algebraQ1" placeholder="e.g., C"></td>
+                            <td><input type="text" id="algebraQ2" placeholder="e.g., C"></td>
+                            <td><input type="text" id="algebraQ3" placeholder="e.g., C"></td>
+                        </tr>
+                        <tr>
+                            <td>Social Science</td>
+                            <td><input type="text" id="socialScienceQ1" placeholder="e.g., B"></td>
+                            <td><input type="text" id="socialScienceQ2" placeholder="e.g., B"></td>
+                            <td><input type="text" id="socialScienceQ3" placeholder="e.g., B"></td>
+                        </tr>
+                        <tr>
+                            <td>Chemistry</td>
+                            <td><input type="text" id="chemistryQ1" placeholder="e.g., A+"></td>
+                            <td><input type="text" id="chemistryQ2" placeholder="e.g., A+"></td>
+                            <td><input type="text" id="chemistryQ3" placeholder="e.g., A+"></td>
+                        </tr>
+                        <tr>
+                            <td>Art</td>
+                            <td><input type="text" id="artQ1" placeholder="e.g., A"></td>
+                            <td><input type="text" id="artQ2" placeholder="e.g., A"></td>
+                            <td><input type="text" id="artQ3" placeholder="e.g., A"></td>
+                        </tr>
+                        <tr>
+                            <td>Physical Education</td>
+                            <td><input type="text" id="peQ1" placeholder="e.g., C"></td>
+                            <td><input type="text" id="peQ2" placeholder="e.g., C"></td>
+                            <td><input type="text" id="peQ3" placeholder="e.g., C"></td>
+                        </tr>
+                        <tr>
+                            <td>Entrepreneurship</td>
+                            <td><input type="text" id="entrepreneurshipQ1" placeholder="e.g., F"></td>
+                            <td><input type="text" id="entrepreneurshipQ2" placeholder="e.g., F"></td>
+                            <td><input type="text" id="entrepreneurshipQ3" placeholder="e.g., F"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="display: flex; gap: 10px;">
+                    <button style="flex: 1;" onclick="resetForm()">Reset</button>
+                    <button style="flex: 1;" onclick="showSaveOptions()">Generate & Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Options Modal -->
+    <div class="modal" id="saveOptionsModal">
+        <h3>Save Report Card</h3>
+        <p>How would you like to save the report card?</p>
+        <div class="modal-buttons">
+            <button class="save-btn" onclick="saveReport()">Save</button>
+            <button class="pdf-btn" onclick="showPrintPreview('pdf')">Print as PDF</button>
+            <button class="save-img-btn" onclick="showPrintPreview('image')">Print as Image</button>
+            <button class="cancel-btn" onclick="hideSaveOptions()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Print Preview Modal -->
+    <div class="print-preview-modal" id="printPreviewModal">
+        <div class="report-card">
+            <h2>Student Report Card</h2>
+            <div class="subtext">Editable school progress report template from EDIT.org</div>
+            <div class="student-details">
+                <div><label>Name:</label><span id="previewName"></span></div>
+                <div><label>School Year:</label><span id="previewSchoolYear"></span></div>
+                <div><label>Grade:</label><span id="previewGrade"></span></div>
+                <div><label>Term:</label><span id="previewTerm"></span></div>
+                <div><label>Teacher:</label><span id="previewTeacher"></span></div>
+                <div><label>Date:</label><span id="previewDate"></span></div>
+            </div>
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Grade Q1</th>
+                        <th>Grade Q2</th>
+                        <th>Grade Q3</th>
+                    </tr>
+                </thead>
+                <tbody id="previewGradesBody"></tbody>
+            </table>
+            <div class="attendance">
+                <div><label>Absences:</label><span id="previewAbsences"></span></div>
+                <div><label>Tardies:</label><span id="previewTardies"></span></div>
+                <div><label>Early Dismissals:</label><span id="previewEarlyDismissals"></span></div>
+                <div><label>Penalties:</label><span id="previewPenalties"></span></div>
+            </div>
+            <div class="footer">
+                <div>
+                    www.yourwebsite.com<br>
+                    391 Christopher St, New York<br>
+                    (655) 334-9988
+                </div>
+                <div class="logo-placeholder">Your Logo</div>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="save-btn" onclick="proceedWithSave()">Proceed</button>
+            <button class="cancel-btn" onclick="hidePrintPreview()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Show Save Options Modal
+        function showSaveOptions() {
+            const studentName = document.getElementById('studentName').value;
+            const schoolYear = document.getElementById('schoolYear').value;
+            const classSelect = document.getElementById('classSelect').value;
+            const term = document.getElementById('term').value;
+            const teacher = document.getElementById('teacher').value;
+            const date = document.getElementById('date').value;
+            const absences = document.getElementById('absences').value;
+            const tardies = document.getElementById('tardies').value;
+            const earlyDismissals = document.getElementById('earlyDismissals').value;
+            const penalties = document.getElementById('penalties').value;
+
+            if (!studentName || !schoolYear || !classSelect || !term || !teacher || !date || !absences || !tardies || !earlyDismissals || !penalties) {
+                alert('Please fill in all student information before saving.');
+                return;
+            }
+
+            const modal = document.getElementById('saveOptionsModal');
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        // Hide Save Options Modal
+        function hideSaveOptions() {
+            document.getElementById('saveOptionsModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        // Show Print Preview
+        let saveFormat = '';
+        function showPrintPreview(format) {
+            saveFormat = format;
+            hideSaveOptions();
+
+            const studentName = document.getElementById('studentName').value;
+            const schoolYear = document.getElementById('schoolYear').value;
+            const classSelect = document.getElementById('classSelect').value;
+            const term = document.getElementById('term').value;
+            const teacher = document.getElementById('teacher').value;
+            const date = document.getElementById('date').value;
+            const absences = document.getElementById('absences').value;
+            const tardies = document.getElementById('tardies').value;
+            const earlyDismissals = document.getElementById('earlyDismissals').value;
+            const penalties = document.getElementById('penalties').value;
+
+            document.getElementById('previewName').textContent = studentName;
+            document.getElementById('previewSchoolYear').textContent = schoolYear;
+            document.getElementById('previewGrade').textContent = classSelect;
+            document.getElementById('previewTerm').textContent = term;
+            document.getElementById('previewTeacher').textContent = teacher;
+            document.getElementById('previewDate').textContent = date;
+            document.getElementById('previewAbsences').textContent = absences;
+            document.getElementById('previewTardies').textContent = tardies;
+            document.getElementById('previewEarlyDismissals').textContent = earlyDismissals;
+            document.getElementById('previewPenalties').textContent = penalties;
+
+            const previewBody = document.getElementById('previewGradesBody');
+            previewBody.innerHTML = `
+                <tr>
+                    <td>Literature</td>
+                    <td>${document.getElementById('literatureQ1').value || ''}</td>
+                    <td>${document.getElementById('literatureQ2').value || ''}</td>
+                    <td>${document.getElementById('literatureQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>History</td>
+                    <td>${document.getElementById('historyQ1').value || ''}</td>
+                    <td>${document.getElementById('historyQ2').value || ''}</td>
+                    <td>${document.getElementById('historyQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Geography</td>
+                    <td>${document.getElementById('geographyQ1').value || ''}</td>
+                    <td>${document.getElementById('geographyQ2').value || ''}</td>
+                    <td>${document.getElementById('geographyQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Algebra</td>
+                    <td>${document.getElementById('algebraQ1').value || ''}</td>
+                    <td>${document.getElementById('algebraQ2').value || ''}</td>
+                    <td>${document.getElementById('algebraQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Social Science</td>
+                    <td>${document.getElementById('socialScienceQ1').value || ''}</td>
+                    <td>${document.getElementById('socialScienceQ2').value || ''}</td>
+                    <td>${document.getElementById('socialScienceQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Chemistry</td>
+                    <td>${document.getElementById('chemistryQ1').value || ''}</td>
+                    <td>${document.getElementById('chemistryQ2').value || ''}</td>
+                    <td>${document.getElementById('chemistryQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Art</td>
+                    <td>${document.getElementById('artQ1').value || ''}</td>
+                    <td>${document.getElementById('artQ2').value || ''}</td>
+                    <td>${document.getElementById('artQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Physical Education</td>
+                    <td>${document.getElementById('peQ1').value || ''}</td>
+                    <td>${document.getElementById('peQ2').value || ''}</td>
+                    <td>${document.getElementById('peQ3').value || ''}</td>
+                </tr>
+                <tr>
+                    <td>Entrepreneurship</td>
+                    <td>${document.getElementById('entrepreneurshipQ1').value || ''}</td>
+                    <td>${document.getElementById('entrepreneurshipQ2').value || ''}</td>
+                    <td>${document.getElementById('entrepreneurshipQ3').value || ''}</td>
+                </tr>
+            `;
+
+            const previewModal = document.getElementById('printPreviewModal');
+            previewModal.style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        // Hide Print Preview
+        function hidePrintPreview() {
+            document.getElementById('printPreviewModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        // Proceed with Save
+        function proceedWithSave() {
+            const previewModal = document.getElementById('printPreviewModal');
+            const studentName = document.getElementById('studentName').value;
+            const classSelect = document.getElementById('classSelect').value;
+
+            if (saveFormat === 'pdf') {
+                html2canvas(previewModal).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF();
+                    
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.save(`ReportCard_${studentName}_Class${classSelect}.pdf`);
+                    hidePrintPreview();
+                    alert('Report card saved as PDF!');
+                }).catch(err => {
+                    console.error('Error generating PDF:', err);
+                    alert('Failed to save report card as PDF.');
+                });
+            } else if (saveFormat === 'image') {
+                html2canvas(previewModal).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `ReportCard_${studentName}_Class${classSelect}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    hidePrintPreview();
+                    alert('Report card saved as image!');
+                }).catch(err => {
+                    console.error('Error generating image:', err);
+                    alert('Failed to save report card as image.');
+                });
+            }
+        }
+
+        // Save Report as JSON
+        function saveReport() {
+            const studentName = document.getElementById('studentName').value;
+            const schoolYear = document.getElementById('schoolYear').value;
+            const classSelect = document.getElementById('classSelect').value;
+            const term = document.getElementById('term').value;
+            const teacher = document.getElementById('teacher').value;
+            const date = document.getElementById('date').value;
+            const absences = document.getElementById('absences').value;
+            const tardies = document.getElementById('tardies').value;
+            const earlyDismissals = document.getElementById('earlyDismissals').value;
+            const penalties = document.getElementById('penalties').value;
+
+            const reportData = {
+                studentName,
+                schoolYear,
+                classSelect,
+                term,
+                teacher,
+                date,
+                absences,
+                tardies,
+                earlyDismissals,
+                penalties,
+                grades: [
+                    { subject: 'Literature', q1: document.getElementById('literatureQ1').value, q2: document.getElementById('literatureQ2').value, q3: document.getElementById('literatureQ3').value },
+                    { subject: 'History', q1: document.getElementById('historyQ1').value, q2: document.getElementById('historyQ2').value, q3: document.getElementById('historyQ3').value },
+                    { subject: 'Geography', q1: document.getElementById('geographyQ1').value, q2: document.getElementById('geographyQ2').value, q3: document.getElementById('geographyQ3').value },
+                    { subject: 'Algebra', q1: document.getElementById('algebraQ1').value, q2: document.getElementById('algebraQ2').value, q3: document.getElementById('algebraQ3').value },
+                    { subject: 'Social Science', q1: document.getElementById('socialScienceQ1').value, q2: document.getElementById('socialScienceQ2').value, q3: document.getElementById('socialScienceQ3').value },
+                    { subject: 'Chemistry', q1: document.getElementById('chemistryQ1').value, q2: document.getElementById('chemistryQ2').value, q3: document.getElementById('chemistryQ3').value },
+                    { subject: 'Art', q1: document.getElementById('artQ1').value, q2: document.getElementById('artQ2').value, q3: document.getElementById('artQ3').value },
+                    { subject: 'Physical Education', q1: document.getElementById('peQ1').value, q2: document.getElementById('peQ2').value, q3: document.getElementById('peQ3').value },
+                    { subject: 'Entrepreneurship', q1: document.getElementById('entrepreneurshipQ1').value, q2: document.getElementById('entrepreneurshipQ2').value, q3: document.getElementById('entrepreneurshipQ3').value }
+                ]
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `ReportCard_${studentName}_Class${classSelect}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            
+            hideSaveOptions();
+            alert('Report card saved as JSON file!');
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('studentName').value = '';
+            document.getElementById('schoolYear').value = '';
+            document.getElementById('term').value = '';
+            document.getElementById('teacher').value = '';
+            document.getElementById('date').value = '';
+            document.getElementById('absences').value = '';
+            document.getElementById('tardies').value = '';
+            document.getElementById('earlyDismissals').value = '';
+            document.getElementById('penalties').value = '';
+            document.getElementById('literatureQ1').value = '';
+            document.getElementById('literatureQ2').value = '';
+            document.getElementById('literatureQ3').value = '';
+            document.getElementById('historyQ1').value = '';
+            document.getElementById('historyQ2').value = '';
+            document.getElementById('historyQ3').value = '';
+            document.getElementById('geographyQ1').value = '';
+            document.getElementById('geographyQ2').value = '';
+            document.getElementById('geographyQ3').value = '';
+            document.getElementById('algebraQ1').value = '';
+            document.getElementById('algebraQ2').value = '';
+            document.getElementById('algebraQ3').value = '';
+            document.getElementById('socialScienceQ1').value = '';
+            document.getElementById('socialScienceQ2').value = '';
+            document.getElementById('socialScienceQ3').value = '';
+            document.getElementById('chemistryQ1').value = '';
+            document.getElementById('chemistryQ2').value = '';
+            document.getElementById('chemistryQ3').value = '';
+            document.getElementById('artQ1').value = '';
+            document.getElementById('artQ2').value = '';
+            document.getElementById('artQ3').value = '';
+            document.getElementById('peQ1').value = '';
+            document.getElementById('peQ2').value = '';
+            document.getElementById('peQ3').value = '';
+            document.getElementById('entrepreneurshipQ1').value = '';
+            document.getElementById('entrepreneurshipQ2').value = '';
+            document.getElementById('entrepreneurshipQ3').value = '';
+        }
+
+        // Sidebar Interactivity
+        const sidebarItems = document.querySelectorAll('.sidebar li');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.textContent === 'Logout') {
+                    if (confirm('Are you sure you want to logout?')) {
+                        alert('Logging out...');
+                    }
+                } else {
+                    alert(`Navigating to ${item.textContent}...`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
