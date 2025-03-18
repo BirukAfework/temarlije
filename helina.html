@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Helina - High School Student</title>
+  <meta name="description" content="Helina's portfolio as a high school student from Ethiopia, showcasing school life, certifications, and achievements.">
+  <meta name="keywords" content="student, Ethiopia, Helina, school life, certifications">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Embedded CSS -->
+  <style>
+    :root {
+      --default-font: "Roboto", sans-serif;
+      --heading-font: "Playfair Display", serif;
+      --nav-font: "Poppins", sans-serif;
+      --background-color: #f9f9f9;
+      --default-color: #333333;
+      --heading-color: #1a1a1a;
+      --accent-color: #ffcc00; /* Ethiopian yellow */
+      --surface-color: #ffffff;
+      --contrast-color: #ffffff;
+      --nav-color: #ffffff;
+      --nav-hover-color: #ffcc00;
+      --nav-mobile-background-color: #ff69b4; /* Hot pink */
+      --nav-dropdown-background-color: #ff69b4;
+      --nav-dropdown-color: #ffffff;
+      --nav-dropdown-hover-color: #ffcc00;
+    }
+
+    body {
+      color: var(--default-color);
+      background-color: var(--background-color);
+      font-family: var(--default-font);
+      scroll-behavior: smooth;
+    }
+
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      color: rgba(255, 204, 0, 0.75);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      color: var(--heading-color);
+      font-family: var(--heading-font);
+    }
+
+    .header {
+      background: #ff69b4; /* Hot pink */
+      padding: 15px 0;
+      transition: all 0.5s;
+      z-index: 997;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .header .logo h1 {
+      font-size: 28px;
+      margin: 0;
+      font-weight: 700;
+      color: var(--contrast-color);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .navmenu ul {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      list-style: none;
+      align-items: center;
+    }
+
+    .navmenu a, .navmenu a:focus {
+      color: var(--nav-color);
+      padding: 10px 12px;
+      font-size: 16px;
+      font-family: var(--nav-font);
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .navmenu li:hover>a, .navmenu .active, .navmenu .active:focus {
+      color: var(--nav-hover-color);
+      transform: scale(1.1);
+    }
+
+    .mobile-nav-toggle {
+      color: var(--contrast-color);
+      font-size: 28px;
+      cursor: pointer;
+      display: none;
+    }
+
+    @media (max-width: 991px) {
+      .mobile-nav-toggle {
+        display: block;
+      }
+      .navmenu ul {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 20px;
+        background: var(--nav-mobile-background-color);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .navmenu a {
+        color: var(--nav-dropdown-color);
+        padding: 15px;
+        font-size: 18px;
+      }
+      .mobile-nav-active .navmenu ul {
+        display: flex;
+      }
+      .mobile-nav-active .mobile-nav-toggle {
+        color: var(--contrast-color);
+        position: fixed;
+        top: 15px;
+        right: 15px;
+      }
+      .mobile-nav-active {
+        overflow: hidden;
+      }
+    }
+
+    .hero {
+      background: url('assets/img/ethiopia-bg.jpg') center center no-repeat;
+      background-size: cover;
+      min-height: 80vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero:before {
+      content: "";
+      background: rgba(0, 0, 0, 0.6);
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero h2, .hero p {
+      color: var(--contrast-color);
+      position: relative;
+      z-index: 1;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero h2 {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin: 15px 0 0;
+    }
+
+    .btn-scroll {
+      color: var(--contrast-color);
+      margin-top: 30px;
+      font-size: 40px;
+      transition: 0.4s;
+      animation: bounce 2s infinite;
+    }
+
+    .btn-scroll:hover {
+      color: var(--accent-color);
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-15px); }
+      60% { transform: translateY(-7px); }
+    }
+
+    .section {
+      padding: 60px 0;
+      background-color: var(--background-color);
+      scroll-margin-top: 70px;
+    }
+
+    .light-background {
+      background: #f9f9f9;
+    }
+
+    .dark-background {
+      background: #343a40;
+      color: var(--contrast-color);
+    }
+
+    .section-title {
+      text-align: center;
+      padding-bottom: 40px;
+    }
+
+    .section-title h2 {
+      font-size: 36px;
+      font-weight: 700;
+      position: relative;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+
+    .section-title h2:after {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 4px;
+      background: var(--accent-color);
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 5px;
+    }
+
+    .section-title p {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .about .content h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    .about .content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .about .content ul li {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .about .content ul i {
+      font-size: 18px;
+      color: var(--accent-color);
+      margin-right: 10px;
+    }
+
+    .skills .skills-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .skills .skill-item {
+      text-align: center;
+      width: 120px;
+    }
+
+    .skills .skill-circle {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 10px;
+    }
+
+    .skills .skill-circle svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .skills .skill-circle .circle-bg {
+      fill: none;
+      stroke: #e9ecef;
+      stroke-width: 10;
+    }
+
+    .skills .skill-circle .circle-progress {
+      fill: none;
+      stroke: var(--accent-color);
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dasharray 1.5s ease-in-out;
+    }
+
+    .skills .skill-circle .circle-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--heading-color);
+    }
+
+    .skills .skill-item h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .certifications .certification-item {
+      padding: 0 0 20px 20px;
+      border-left: 4px solid var(--accent-color);
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .certifications .certification-item::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      left: -10px;
+      top: 0;
+      background: var(--accent-color);
+      border: 2px solid var(--surface-color);
+    }
+
+    .certifications .certification-item h4 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--heading-color);
+    }
+
+    .certifications .certification-item h5 {
+      font-size: 16px;
+      background: rgba(255, 204, 0, 0.2);
+      padding: 5px 10px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+
+    .school-life-item {
+      position: relative;
+      overflow: hidden;
+      height: 300px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      transition: transform 0.3s;
+    }
+
+    .school-life-item:hover {
+      transform: scale(1.03);
+    }
+
+    .school-life-item .swiper {
+      height: 100%;
+    }
+
+    .school-life-item .swiper-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .school-life-item .school-life-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--contrast-color);
+      padding: 15px;
+      transition: 0.3s;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .school-life-item:hover .school-life-info {
+      background: var(--accent-color);
+    }
+
+    .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+      background: var(--contrast-color);
+      opacity: 0.8;
+    }
+
+    .swiper-pagination-bullet-active {
+      background: #dc3545;
+      opacity: 1;
+    }
+
+    .contact .info-item {
+      background: var(--surface-color);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .contact .info-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .contact .info-item i {
+      font-size: 20px;
+      color: var(--accent-color);
+      background: rgba(255, 204, 0, 0.1);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .contact .php-email-form input, .contact .php-email-form textarea {
+      border-radius: 8px;
+      border: 2px solid #e9ecef;
+      padding: 12px;
+      transition: border-color 0.3s;
+      font-size: 14px;
+    }
+
+    .contact .php-email-form input:focus, .contact .php-email-form textarea:focus {
+      border-color: var(--accent-color);
+    }
+
+    .contact .php-email-form button {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      padding: 12px 30px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .contact .php-email-form button:hover {
+      background: #ff69b4;
+      transform: scale(1.05);
+    }
+
+    .footer {
+      background: #dc3545;
+      color: var(--contrast-color);
+      padding: 30px 0;
+      text-align: center;
+    }
+
+    .footer h3 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .footer .social-links a {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      margin: 0 8px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+
+    .footer .social-links a:hover {
+      background: #ff69b4;
+      transform: scale(1.1);
+    }
+
+    .scroll-top {
+      position: fixed;
+      right: 15px;
+      bottom: 15px;
+      background: var(--accent-color);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      transition: all 0.4s;
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .scroll-top.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .scroll-top i {
+      color: var(--contrast-color);
+      font-size: 24px;
+    }
+
+    .scroll-top:hover {
+      background: #ff69b4;
+      transform: scale(1.1);
+    }
+
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: #ff69b4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #preloader:before {
+      content: "";
+      width: 60px;
+      height: 60px;
+      border: 6px solid var(--accent-color);
+      border-top-color: #dc3545;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 767px) {
+      .header { padding: 10px 0; }
+      .header .logo h1 { font-size: 24px; }
+      .mobile-nav-toggle { font-size: 24px; }
+      .hero { min-height: 60vh; }
+      .hero h2 { font-size: 32px; }
+      .hero p { font-size: 16px; }
+      .btn-scroll { font-size: 30px; margin-top: 20px; }
+      .section { padding: 40px 0; }
+      .section-title h2 { font-size: 28px; }
+      .section-title p { font-size: 14px; }
+      .about .content h2 { font-size: 24px; }
+      .about .content ul li { font-size: 14px; }
+      .skills .skill-item { width: 100px; }
+      .skills .skill-circle { width: 80px; height: 80px; }
+      .skills .skill-circle .circle-text { font-size: 18px; }
+      .skills .skill-item h4 { font-size: 14px; }
+      .certifications .certification-item h4 { font-size: 18px; }
+      .certifications .certification-item h5 { font-size: 14px; }
+      .school-life-item { height: 200px; }
+      .contact .info-item { padding: 15px; }
+      .contact .info-item i { width: 35px; height: 35px; font-size: 18px; }
+      .footer h3 { font-size: 24px; }
+      .footer .social-links a { width: 35px; height: 35px; font-size: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+      <a href="#" class="logo d-flex align-items-center">
+        <h1 class="sitename">Helina</h1>
+      </a>
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#certifications">Certifications</a></li>
+          <li><a href="#school-life">School Life</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle bi bi-list"></i>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <section id="hero" class="hero section dark-background">
+      <div class="container text-center" data-aos="zoom-in" data-aos-delay="200">
+        <h2>Helina from Ethiopia</h2>
+        <p>High School Student<br>Addis Ababa</p>
+        <a href="#about" class="btn-scroll" title="Scroll Down"><i class="bi bi-chevron-down"></i></a>
+      </div>
+    </section>
+
+    <section id="about" class="about section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>About Me</h2>
+        <p>A proud student shining in school.</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4 justify-content-center">
+          <div class="col-lg-4 col-md-6">
+            <img src="assets/img/helina-profile.jpg" class="img-fluid rounded-circle shadow-lg" alt="Helina">
+          </div>
+          <div class="col-lg-8 col-md-6 content">
+            <h2>High School Student</h2>
+            <p class="fst-italic py-3">
+              I’m Helina, a Grade 11 student at Bole Secondary School, excited about learning and growing.
+            </p>
+            <div class="row">
+              <div class="col-lg-6 col-12">
+                <ul>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Birthday:</strong> <span>15 March 2008</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>School:</strong> <span>Bole Secondary School</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Phone:</strong> <span>+251 911 555 123</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>City:</strong> <span>Addis Ababa, Ethiopia</span></li>
+                </ul>
+              </div>
+              <div class="col-lg-6 col-12">
+                <ul>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Age:</strong> <span>17</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Grade:</strong> <span>11</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Email:</strong> <span>helina@helina.et</span></li>
+                  <li><i class="bi bi-chevron-right"></i> <strong>Goal:</strong> <span>Future Leader</span></li>
+                </ul>
+              </div>
+            </div>
+            <p class="py-3">
+              I love school, my friends, and making a difference in my community, inspired by Ethiopia’s spirit.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="skills section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Skills</h2>
+        <p>My strengths as a student.</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="skills-content skills-animation">
+          <div class="skill-item">
+            <div class="skill-circle">
+              <svg>
+                <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="circle-progress" cx="50" cy="50" r="45" stroke-dasharray="0 282.74" data-progress="85"></circle>
+              </svg>
+              <span class="circle-text">85%</span>
+            </div>
+            <h4>Teamwork</h4>
+          </div>
+          <div class="skill-item">
+            <div class="skill-circle">
+              <svg>
+                <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="circle-progress" cx="50" cy="50" r="45" stroke-dasharray="0 282.74" data-progress="80"></circle>
+              </svg>
+              <span class="circle-text">80%</span>
+            </div>
+            <h4>Time Management</h4>
+          </div>
+          <div class="skill-item">
+            <div class="skill-circle">
+              <svg>
+                <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="circle-progress" cx="50" cy="50" r="45" stroke-dasharray="0 282.74" data-progress="75"></circle>
+              </svg>
+              <span class="circle-text">75%</span>
+            </div>
+            <h4>Public Speaking</h4>
+          </div>
+          <div class="skill-item">
+            <div class="skill-circle">
+              <svg>
+                <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="circle-progress" cx="50" cy="50" r="45" stroke-dasharray="0 282.74" data-progress="70"></circle>
+              </svg>
+              <span class="circle-text">70%</span>
+            </div>
+            <h4>Creativity</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="certifications" class="certifications section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Certifications</h2>
+        <p>My academic achievements.</p>
+      </div>
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="100">
+            <div class="certification-item">
+              <h4>Certificate of Excellence in Mathematics</h4>
+              <h5>2023</h5>
+              <p><em>Bole Secondary School</em></p>
+              <p>Awarded for top performance in Grade 10 math exams.</p>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="200">
+            <div class="certification-item">
+              <h4>Leadership Workshop Certificate</h4>
+              <h5>2024</h5>
+              <p><em>Ethiopian Youth Council</em></p>
+              <p>Completed a 3-day leadership training program.</p>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12" data-aos="fade-up" data-aos-delay="300">
+            <div class="certification-item">
+              <h4>Community Service Award</h4>
+              <h5>2023</h5>
+              <p><em>Bole Community Center</em></p>
+              <p>Recognized for volunteering in local cleanup drives.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="school-life" class="school-life section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>School Life</h2>
+        <p>My favorite moments.</p>
+      </div>
+      <div class="container">
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="col-lg-4 col-md-6">
+            <div class="school-life-item">
+              <div class="swiper school-life-swiper">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide"><img src="assets/img/school-life/clubs-1.jpg" class="img-fluid" alt="Clubs 1"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/clubs-2.jpg" class="img-fluid" alt="Clubs 2"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/clubs-3.jpg" class="img-fluid" alt="Clubs 3"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+              </div>
+              <div class="school-life-info">
+                <h4>School Clubs</h4>
+                <p>Debate Team Fun</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="school-life-item">
+              <div class="swiper school-life-swiper">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide"><img src="assets/img/school-life/events-1.jpg" class="img-fluid" alt="Events 1"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/events-2.jpg" class="img-fluid" alt="Events 2"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/events-3.jpg" class="img-fluid" alt="Events 3"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+              </div>
+              <div class="school-life-info">
+                <h4>School Events</h4>
+                <p>Cultural Day</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <div class="school-life-item">
+              <div class="swiper school-life-swiper">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide"><img src="assets/img/school-life/friends-1.jpg" class="img-fluid" alt="Friends 1"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/friends-2.jpg" class="img-fluid" alt="Friends 2"></div>
+                  <div class="swiper-slide"><img src="assets/img/school-life/friends-3.jpg" class="img-fluid" alt="Friends 3"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+              </div>
+              <div class="school-life-info">
+                <h4>Friends</h4>
+                <p>Best Memories</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p>Let’s connect!</p>
+      </div>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4">
+          <div class="col-lg-4 col-md-12">
+            <div class="info-item d-flex">
+              <i class="bi bi-geo-alt flex-shrink-0"></i>
+              <div>
+                <h3>Address</h3>
+                <p>Bole, Addis Ababa, Ethiopia</p>
+              </div>
+            </div>
+            <div class="info-item d-flex mt-4">
+              <i class="bi bi-telephone flex-shrink-0"></i>
+              <div>
+                <h3>Call Me</h3>
+                <p>+251 911 555 123</p>
+              </div>
+            </div>
+            <div class="info-item d-flex mt-4">
+              <i class="bi bi-envelope flex-shrink-0"></i>
+              <div>
+                <h3>Email Me</h3>
+                <p>helina@helina.et</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 col-md-12">
+            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+              <div class="row gy-4">
+                <div class="col-md-6"><input type="text" name="name" class="form-control" placeholder="Your Name" required></div>
+                <div class="col-md-6"><input type="email" name="email" class="form-control" placeholder="Your Email" required></div>
+                <div class="col-md-12"><input type="text" name="subject" class="form-control" placeholder="Subject" required></div>
+                <div class="col-md-12"><textarea name="message" class="form-control" rows="5" placeholder="Message" required></textarea></div>
+                <div class="col-md-12 text-center"><button type="submit">Send Message</button></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer">
+    <div class="container">
+      <h3 class="sitename">Helina</h3>
+      <p>Created with love as a student in Ethiopia.</p>
+      <div class="social-links d-flex justify-content-center">
+        <a href="https://t.me/helina_et" title="Telegram"><i class="bi bi-telegram"></i></a>
+        <a href="https://instagram.com/helina.et" title="Instagram"><i class="bi bi-instagram"></i></a>
+        <a href="https://tiktok.com/@helina_et" title="TikTok"><i class="bi bi-tiktok"></i></a>
+      </div>
+      <div class="copyright">
+        <span>Copyright</span> <strong class="px-1 sitename">Helina</strong> <span>All Rights Reserved</span>
+      </div>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/waypoints@4.0.1/noframework.waypoints.min.js"></script>
+
+  <!-- Embedded JS -->
+  <script>
+    (function() {
+      "use strict";
+
+      // Toggle scrolled class
+      function toggleScrolled() {
+        const selectBody = document.querySelector('body');
+        const selectHeader = document.querySelector('#header');
+        window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+      }
+      document.addEventListener('scroll', toggleScrolled);
+      window.addEventListener('load', toggleScrolled);
+
+      // Mobile nav toggle
+      const mobileNavToggleBtn = document.querySelector('.mobile-nav-toggle');
+      function mobileNavToggle() {
+        document.querySelector('body').classList.toggle('mobile-nav-active');
+        mobileNavToggleBtn.classList.toggle('bi-list');
+        mobileNavToggleBtn.classList.toggle('bi-x');
+      }
+      mobileNavToggleBtn.addEventListener('click', mobileNavToggle);
+
+      document.querySelectorAll('#navmenu a').forEach(navmenu => {
+        navmenu.addEventListener('click', () => {
+          if (document.querySelector('.mobile-nav-active')) {
+            mobileNavToggle();
+          }
+        });
+      });
+
+      // Preloader
+      const preloader = document.querySelector('#preloader');
+      if (preloader) {
+        window.addEventListener('load', () => {
+          preloader.remove();
+        });
+      }
+
+      // Scroll top button
+      let scrollTop = document.querySelector('.scroll-top');
+      function toggleScrollTop() {
+        if (scrollTop) {
+          window.scrollY > 100 ? scrollTop.classList.add('active') : scrollTop.classList.remove('active');
+        }
+      }
+      scrollTop.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      window.addEventListener('load', toggleScrollTop);
+      document.addEventListener('scroll', toggleScrollTop);
+
+      // AOS initialization
+      function aosInit() {
+        AOS.init({
+          duration: 800,
+          easing: 'ease-in-out',
+          once: false,
+          mirror: true
+        });
+      }
+      window.addEventListener('load', aosInit);
+
+      // Skills animation
+      let skillsAnimation = document.querySelectorAll('.skills-animation');
+      skillsAnimation.forEach((item) => {
+        new Waypoint({
+          element: item,
+          offset: '80%',
+          handler: function() {
+            let circles = item.querySelectorAll('.circle-progress');
+            circles.forEach(el => {
+              let progress = el.getAttribute('data-progress');
+              let circumference = 282.74; // 2 * π * r (r = 45)
+              let offset = circumference - (progress / 100) * circumference;
+              el.style.strokeDasharray = `${(progress / 100) * circumference} ${circumference}`;
+            });
+          }
+        });
+      });
+
+      // Swiper initialization for School Life
+      window.addEventListener('load', () => {
+        const swipers = document.querySelectorAll('.school-life-swiper');
+        swipers.forEach(swiper => {
+          new Swiper(swiper, {
+            loop: true,
+            speed: 600,
+            autoplay: {
+              delay: 3000,
+              disableOnInteraction: false
+            },
+            slidesPerView: 1,
+            pagination: {
+              el: '.swiper-pagination',
+              type: 'bullets',
+              clickable: true
+            }
+          });
+        });
+      });
+
+      // Scrollspy for navigation
+      let navmenulinks = document.querySelectorAll('.navmenu a');
+      function navmenuScrollspy() {
+        navmenulinks.forEach(navmenulink => {
+          if (!navmenulink.hash) return;
+          let section = document.querySelector(navmenulink.hash);
+          if (!section) return;
+          let position = window.scrollY + 200;
+          if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
+            document.querySelectorAll('.navmenu a.active').forEach(link => link.classList.remove('active'));
+            navmenulink.classList.add('active');
+          } else {
+            navmenulink.classList.remove('active');
+          }
+        });
+      }
+      window.addEventListener('load', navmenuScrollspy);
+      document.addEventListener('scroll', navmenuScrollspy);
+    })();
+  </script>
+</body>
+</html>
