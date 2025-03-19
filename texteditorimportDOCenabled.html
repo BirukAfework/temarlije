@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temar Lije - Editor</title>
+    <!-- Include Mammoth.js for .docx to HTML conversion -->
+    <script src="https://unpkg.com/mammoth@1.4.2/mammoth.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        .light-theme {
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            background: #2c2c2c;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .menu-bar {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-bar .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+
+        .light-theme .menu-bar .hamburger {
+            color: #333;
+        }
+
+        .menu-bar .hamburger:hover {
+            color: #ff6f61;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: -220px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .light-theme .sidebar {
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar .logo {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 12px 15px;
+            cursor: pointer;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .sidebar li:hover {
+            background-color: #ff6f61;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li:hover {
+            background-color: #ffccc7;
+        }
+
+        .sidebar li.active {
+            background-color: #ff6f61;
+            font-weight: bold;
+            transform: translateX(5px);
+        }
+
+        .light-theme .sidebar li.active {
+            background-color: #ffccc7;
+        }
+
+        .sidebar .logout {
+            margin-top: 20px;
+            border-top: 1px solid #555;
+            padding-top: 12px;
+        }
+
+        .light-theme .sidebar .logout {
+            border-top: 1px solid #ddd;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .light-theme .main-content {
+            background: #f4f7fa;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+        }
+
+        .light-theme .header {
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-right input {
+            padding: 8px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            transition: border 0.3s ease;
+        }
+
+        .light-theme .header-right input {
+            border: 1px solid #ddd;
+            background: #ffffff;
+            color: #333;
+        }
+
+        .header-right input:focus {
+            border-color: #ff6f61;
+            outline: none;
+        }
+
+        .header-right .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ff6f61;
+            transition: transform 0.3s ease;
+        }
+
+        .header-right .user-profile img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle label {
+            font-size: 14px;
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .theme-toggle .slider {
+            width: 40px;
+            height: 20px;
+            background: #555;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .light-theme .theme-toggle .slider {
+            background: #ccc;
+        }
+
+        .theme-toggle .slider::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle input:checked + .slider {
+            background: #ff6f61;
+        }
+
+        .theme-toggle input:checked + .slider::before {
+            transform: translateX(20px);
+        }
+
+        /* Editor Container */
+        .editor-container {
+            flex: 1;
+            margin: 10px;
+            background: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .light-theme .editor-container {
+            background: #ffffff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .editor-container h3 {
+            margin: 15px 20px;
+            font-size: 20px;
+            color: #ff6f61;
+        }
+
+        .toolbar {
+            background: #3a3a3a;
+            padding: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            border-bottom: 1px solid #555;
+        }
+
+        .light-theme .toolbar {
+            background: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .toolbar select, .toolbar button {
+            background: #4a4a4a;
+            border: 1px solid #555;
+            border-radius: 3px;
+            padding: 3px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+
+        .light-theme .toolbar select, .light-theme .toolbar button {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .toolbar button:hover, .toolbar select:hover {
+            background: #ff6f61;
+            color: #fff;
+        }
+
+        .light-theme .toolbar button:hover, .light-theme .toolbar select:hover {
+            background: #ffccc7;
+            color: #333;
+        }
+
+        .toolbar button.active {
+            background: #ff6f61;
+            color: #fff;
+        }
+
+        .light-theme .toolbar button.active {
+            background: #ffccc7;
+            color: #333;
+        }
+
+        .tabs {
+            margin-top: 5px;
+            border-bottom: 1px solid #555;
+            display: inline-flex;
+        }
+
+        .light-theme .tabs {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-links {
+            display: inline-flex;
+            gap: 3px;
+        }
+
+        .tab-links button {
+            padding: 5px 10px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-bottom: none;
+            border-radius: 3px 3px 0 0;
+            cursor: pointer;
+            color: #e0e0e0;
+        }
+
+        .light-theme .tab-links button {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .tab-links button.active {
+            background: #2c2c2c;
+            border-bottom: 1px solid #2c2c2c;
+            color: #ff6f61;
+        }
+
+        .light-theme .tab-links button.active {
+            background: #ffffff;
+            border-bottom: 1px solid #ffffff;
+            color: #ff6f61;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 10px;
+            background: #2c2c2c;
+            border: 1px solid #555;
+            border-radius: 0 3px 3px 3px;
+            color: #e0e0e0;
+        }
+
+        .light-theme .tab-content {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-content button {
+            margin-right: 5px;
+        }
+
+        #editor {
+            border: none;
+            flex: 1;
+            padding: 20px;
+            font-family: Calibri, sans-serif;
+            font-size: 11pt;
+            outline: none;
+            overflow-y: auto;
+            background: #3a3a3a;
+            margin: 0;
+            position: relative;
+            color: #e0e0e0;
+        }
+
+        .light-theme #editor {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        #editor:focus {
+            border: none;
+        }
+
+        #editor img, #editor .stamp, #editor .date {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            cursor: move;
+            position: relative;
+        }
+
+        .light-theme #editor img, .light-theme #editor .stamp, .light-theme #editor .date {
+            border: 1px solid #ddd;
+        }
+
+        #editor img.resizeable, #editor .stamp.resizeable, #editor .date.resizeable {
+            resize: both;
+            overflow: auto;
+        }
+
+        .stamp {
+            display: inline-block;
+        }
+
+        .date {
+            display: inline-block;
+            padding: 5px;
+            background: rgba(255, 99, 71, 0.1);
+            border: 1px solid #555;
+            border-radius: 5px;
+        }
+
+        .light-theme .date {
+            background: rgba(255, 99, 71, 0.2);
+            border: 1px solid #ddd;
+        }
+
+        /* A4 Print Styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #editor, #editor * {
+                visibility: visible;
+            }
+
+            #editor {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 210mm;
+                min-height: 297mm;
+                padding: 15mm;
+                margin: 0;
+                border: none;
+                background: #fff;
+                color: #000;
+                font-size: 11pt;
+                line-height: 1.5;
+                box-sizing: border-box;
+            }
+
+            #editor img, #editor .stamp, #editor .date {
+                border: none;
+                max-width: 100%;
+                height: auto;
+            }
+
+            #editor .date {
+                background: none;
+                border: none;
+                padding: 0;
+            }
+
+            #editor img, #editor .stamp {
+                max-width: 180mm;
+                height: auto;
+            }
+
+            #editor * {
+                color: #000 !important;
+                background: none !important;
+                border-color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div class="hamburger" onclick="toggleSidebar()">☰</div>
+            <div class="header">
+                <h1>Editor</h1>
+                <div class="header-right">
+                    <div class="theme-toggle">
+                        <label>Dark/Light</label>
+                        <input type="checkbox" id="themeToggle">
+                        <label for="themeToggle" class="slider"></label>
+                    </div>
+                    <input type="text" placeholder="Search...">
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">Temar Lije</div>
+            <ul>
+                <li>Dashboard</li>
+                <li>Calendar</li>
+                <li>Students</li>
+                <li>Teachers</li>
+                <li class="active">Editor</li>
+                <li>Library</li>
+                <li>Roaster</li>
+                <li>Report</li>
+                <li>Settings</li>
+                <li class="logout">Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Editor Container -->
+            <div class="editor-container">
+                <h3>Document Editor</h3>
+                <div class="toolbar">
+                    <select id="fontSelect" onchange="changeFont()">
+                        <option value="Calibri">Calibri</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                    </select>
+                    <select id="fontSizeSelect" onchange="changeFontSize()">
+                        <option value="8pt">8</option>
+                        <option value="9pt">9</option>
+                        <option value="10pt">10</option>
+                        <option value="11pt" selected>11</option>
+                        <option value="12pt">12</option>
+                        <option value="14pt">14</option>
+                        <option value="18pt">18</option>
+                        <option value="24pt">24</option>
+                        <option value="36pt">36</option>
+                    </select>
+                    <button id="boldBtn" onclick="formatText('bold')">B</button>
+                    <button id="italicBtn" onclick="formatText('italic')">I</button>
+                    <button id="underlineBtn" onclick="formatText('underline')">U</button>
+                    <button id="alignLeftBtn" onclick="alignText('left')">Align Left</button>
+                    <button id="alignCenterBtn" onclick="alignText('center')">Align Center</button>
+                    <button id="alignRightBtn" onclick="alignText('right')">Align Right</button>
+                    <button id="alignJustifyBtn" onclick="alignText('justify')">Justify</button>
+                    <button id="bulletListBtn" onclick="createList('unordered')">Bullets</button>
+                    <button id="numberListBtn" onclick="createList('ordered')">Numbers</button>
+                    <button onclick="document.getElementById('imageInput').click()">Insert Image</button>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="insertImage(event)">
+                    <button onclick="document.getElementById('docInput').click()">Import Document</button>
+                    <input type="file" id="docInput" accept=".docx" style="display: none;" onchange="importDocument(event)">
+                    <div class="tabs">
+                        <div class="tab-links">
+                            <button class="tab-link active" onclick="openTab('stampTab')">Stamp</button>
+                            <button class="tab-link" onclick="openTab('dateTab')">Date</button>
+                        </div>
+                        <div id="stampTab" class="tab-content active">
+                            <button onclick="insertStamp()">Insert Stamp</button>
+                        </div>
+                        <div id="dateTab" class="tab-content">
+                            <button onclick="insertDate()">Insert Date</button>
+                        </div>
+                    </div>
+                    <button id="undoBtn" onclick="undo()">Undo</button>
+                    <button id="redoBtn" onclick="redo()">Redo</button>
+                    <button onclick="saveAsPDF()">Save as PDF</button>
+                    <button onclick="saveAsHTML()">Save as HTML</button>
+                </div>
+                <div id="editor" contenteditable="true">
+                    <p>Start typing here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        let commandHistory = [];
+        let historyIndex = -1;
+        let draggedElement = null;
+        let isDragging = false;
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('light-theme');
+        });
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Sidebar Interactivity
+        const sidebarItems = document.querySelectorAll('.sidebar li');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                sidebarItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                if (item.textContent === 'Logout') {
+                    if (confirm('Are you sure you want to logout?')) {
+                        alert('Logging out...');
+                        // Add actual logout logic here (e.g., redirect to login page)
+                    }
+                } else {
+                    alert(`Navigating to ${item.textContent}...`);
+                    // Add navigation logic here (e.g., load different content)
+                }
+                toggleSidebar();
+            });
+        });
+
+        // Import Document (.docx)
+        function importDocument(event) {
+            const file = event.target.files[0];
+            if (file && file.name.endsWith('.docx')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const arrayBuffer = e.target.result;
+                    mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                        .then(result => {
+                            editor.innerHTML = result.value; // Load the HTML into the editor
+                            saveHistory();
+                            rebindEvents();
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Error importing the document. Please ensure it is a valid .docx file.');
+                        });
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert('Please select a valid .docx file.');
+            }
+            event.target.value = '';
+        }
+
+        // Format text
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            updateButtonStates();
+            saveHistory();
+        }
+
+        // Align text
+        function alignText(alignment) {
+            document.execCommand('justify' + alignment.charAt(0).toUpperCase() + alignment.slice(1), false, null);
+            updateButtonStates();
+            saveHistory();
+        }
+
+        // Create lists
+        function createList(type) {
+            const command = type === 'unordered' ? 'insertUnorderedList' : 'insertOrderedList';
+            document.execCommand(command, false, null);
+            updateButtonStates();
+            saveHistory();
+        }
+
+        // Change font
+        function changeFont() {
+            const font = document.getElementById('fontSelect').value;
+            editor.style.fontFamily = font;
+            saveHistory();
+        }
+
+        // Change font size
+        function changeFontSize() {
+            const size = document.getElementById('fontSizeSelect').value;
+            document.execCommand('fontSize', false, '7');
+            const fontElements = editor.getElementsByTagName('font');
+            for (let i = 0; i < fontElements.length; i++) {
+                if (fontElements[i].size === '7') {
+                    fontElements[i].removeAttribute('size');
+                    fontElements[i].style.fontSize = size;
+                }
+            }
+            saveHistory();
+        }
+
+        // Undo and Redo
+        function saveHistory() {
+            const currentContent = editor.innerHTML;
+            commandHistory = commandHistory.slice(0, historyIndex + 1);
+            commandHistory.push(currentContent);
+            historyIndex++;
+            rebindEvents();
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                editor.innerHTML = commandHistory[historyIndex];
+                updateButtonStates();
+                rebindEvents();
+            }
+        }
+
+        function redo() {
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                editor.innerHTML = commandHistory[historyIndex];
+                updateButtonStates();
+                rebindEvents();
+            }
+        }
+
+        // Update button states
+        function updateButtonStates() {
+            document.getElementById('boldBtn').classList.toggle('active', document.queryCommandState('bold'));
+            document.getElementById('italicBtn').classList.toggle('active', document.queryCommandState('italic'));
+            document.getElementById('underlineBtn').classList.toggle('active', document.queryCommandState('underline'));
+            document.getElementById('alignLeftBtn').classList.toggle('active', document.queryCommandState('justifyLeft'));
+            document.getElementById('alignCenterBtn').classList.toggle('active', document.queryCommandState('justifyCenter'));
+            document.getElementById('alignRightBtn').classList.toggle('active', document.queryCommandState('justifyRight'));
+            document.getElementById('alignJustifyBtn').classList.toggle('active', document.queryCommandState('justifyFull'));
+            document.getElementById('bulletListBtn').classList.toggle('active', document.queryCommandState('insertUnorderedList'));
+            document.getElementById('numberListBtn').classList.toggle('active', document.queryCommandState('insertOrderedList'));
+        }
+
+        // Insert Image
+        function insertImage(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.classList.add('resizeable');
+                    img.style.maxWidth = '100%';
+                    img.style.height = 'auto';
+                    const selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        range.deleteContents();
+                        range.insertNode(img);
+                        range.collapse(false);
+                    } else {
+                        editor.appendChild(img);
+                    }
+                    editor.focus();
+                    saveHistory();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select a valid image file (e.g., .jpg, .png).');
+            }
+            event.target.value = '';
+        }
+
+        // Insert Stamp (as Image)
+        function insertStamp() {
+            const stamp = document.createElement('img');
+            stamp.src = 'https://www.pngfind.com/pngs/m/138-1384136_confidential-stamp-png-transparent-confidential-stamp-png-png.png';
+            stamp.classList.add('stamp', 'resizeable');
+            stamp.style.width = '100px';
+            stamp.style.height = 'auto';
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(stamp);
+                range.collapse(false);
+            } else {
+                editor.appendChild(stamp);
+            }
+            editor.focus();
+            saveHistory();
+        }
+
+        // Insert Date
+        function insertDate() {
+            const date = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-US', options);
+            const dateElement = document.createElement('div');
+            dateElement.classList.add('date', 'resizeable');
+            dateElement.textContent = formattedDate;
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(dateElement);
+                range.collapse(false);
+            } else {
+                editor.appendChild(dateElement);
+            }
+            editor.focus();
+            saveHistory();
+        }
+
+        // Tab functionality
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`button[onclick="openTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Dragging and Resizing
+        function rebindEvents() {
+            const elements = editor.querySelectorAll('img.resizeable, .stamp.resizeable, .date.resizeable');
+            elements.forEach(element => {
+                element.draggable = true;
+                element.style.position = 'relative';
+                element.addEventListener('dragstart', (e) => {
+                    draggedElement = element;
+                    isDragging = true;
+                    e.dataTransfer.setData('text/plain', '');
+                });
+                element.addEventListener('dragend', () => {
+                    isDragging = false;
+                    draggedElement = null;
+                    saveHistory();
+                });
+            });
+
+            editor.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            editor.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (draggedElement && isDragging) {
+                    const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+                    if (range) {
+                        range.insertNode(draggedElement);
+                        saveHistory();
+                    }
+                }
+            });
+        }
+
+        // Save initial state to history
+        saveHistory();
+
+        // Update button states on editor changes
+        editor.addEventListener('input', () => {
+            updateButtonStates();
+            saveHistory();
+        });
+        editor.addEventListener('click', updateButtonStates);
+        editor.addEventListener('keyup', updateButtonStates);
+
+        // Save as PDF
+        function saveAsPDF() {
+            editor.focus();
+            window.print();
+        }
+
+        // Save as HTML
+        function saveAsHTML() {
+            const content = editor.innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'document.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
